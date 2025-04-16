@@ -18,7 +18,8 @@ import HistoryPage from "@/modules/dashboard/history/page/HistoryPage";
 import CardsPage from "@/modules/dashboard/cards/page/CardsPage";
 import AnalyticsPage from "@/modules/dashboard/analytics/page/AnalyticsPage";
 import Settings from "@/modules/dashboard/settings/page/SettingsPage";
-
+import ExecutiveDashboardPage from "./modules/dashboard/executive/page/ExecutiveDashboardPage";
+import AdminDashboardPage from "./modules/dashboard/admin/page/AdminDashboardPage";
 // En construcción
 import PlaySimple from "@/modules/common/pages/PlaySimple";
 import SeguroSimple from "@/modules/common/pages/SeguroSimple";
@@ -53,7 +54,9 @@ function App() {
               path="/dashboard/transactions"
               element={<TransactionsPage />}
             />
-
+            <Route path="/dashboard/admin" element={<AdminDashboardPage />} />
+            <Route path="/dashboard/admin/users" element={<AdminDashboardPage />} />
+            <Route path="/dashboard/executive" element={<ExecutiveDashboardPage />} />
             <Route path="/dashboard/history" element={<HistoryPage />} />
             <Route path="/dashboard/cards" element={<CardsPage />} />
             <Route path="/dashboard/analytics" element={<AnalyticsPage />} />

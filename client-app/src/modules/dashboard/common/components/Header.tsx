@@ -1,17 +1,9 @@
+"use client"
+
 // src/modules/dashboard/common/components/Header.tsx
 
-import {
-  Bell,
-  LogOut,
-  Menu,
-  Moon,
-  Sun,
-  User,
-  Settings,
-  ChevronRight,
-  Home,
-} from "lucide-react";
-import { Avatar, AvatarFallback } from "@/components/ui/avatar";
+import { Bell, LogOut, Menu, Moon, Sun, User, Settings, ChevronRight, Home } from "lucide-react"
+import { Avatar, AvatarFallback } from "@/components/ui/avatar"
 import {
   DropdownMenu,
   DropdownMenuContent,
@@ -19,28 +11,30 @@ import {
   DropdownMenuLabel,
   DropdownMenuSeparator,
   DropdownMenuTrigger,
-} from "@/components/ui/dropdown-menu";
-import { Badge } from "@/components/ui/badge";
-import { useTheme } from "@/context/ThemeContext";
-import { useAuth } from "@/context/AuthContext";
-import { useLocation, Link } from "react-router-dom";
-
-// Importamos la clase .header-icon-button que definiste en tu index.css
-// import { Button } from "@/components/ui/button"; // si ya no la usas, puedes comentarlo
+} from "@/components/ui/dropdown-menu"
+import { Badge } from "@/components/ui/badge"
+import { useTheme } from "@/context/ThemeContext"
+import { useAuth } from "@/context/AuthContext"
+import { useLocation, Link, useNavigate } from "react-router-dom"
 
 interface HeaderProps {
-  onMenuClick?: () => void;
+  onMenuClick?: () => void
 }
 
 export function Header({ onMenuClick }: HeaderProps) {
-  const { theme, setTheme } = useTheme();
-  const { user, logout } = useAuth();
-
-  const location = useLocation();
+  const { theme, setTheme } = useTheme()
+  const { user, logout } = useAuth()
+  const navigate = useNavigate()
+  const location = useLocation()
 
   const toggleTheme = () => {
-    setTheme(theme === "light" ? "dark" : "light");
-  };
+    setTheme(theme === "light" ? "dark" : "light")
+  }
+
+  const handleLogout = () => {
+    logout()
+    navigate("/login")
+  }
 
   const breadcrumbLabels: Record<string, string> = {
     home: "Inicio",
@@ -49,82 +43,62 @@ export function Header({ onMenuClick }: HeaderProps) {
     cards: "Tarjetas",
     transactions: "Transferencias",
     history: "Historial",
-  };
+    admin: "Administración",
+    executive: "Atención al Cliente",
+  }
 
   // Generador de breadcrumb
   const generateBreadcrumb = () => {
-    const paths = location.pathname.split("/").filter(Boolean);
-    if (paths.length <= 1) return null;
+    const paths = location.pathname.split("/").filter(Boolean)
+    if (paths.length <= 1) return null
 
-    const breadcrumbs = [];
-    let currentPath = "";
+    const breadcrumbs = []
+    let currentPath = ""
 
     // Inicio
     breadcrumbs.push(
-      <Link
-        key="home"
-        to="/dashboard"
-        className="flex items-center text-white hover:text-white/80 transition-colors"
-      >
+      <Link key="home" to="/dashboard" className="flex items-center text-white hover:text-white/80 transition-colors">
         <Home size={16} />
-      </Link>
-    );
+      </Link>,
+    )
 
     // Chevron
-    breadcrumbs.push(
-      <ChevronRight
-        key="chevron-home"
-        className="mx-1 text-white/80"
-        size={16}
-      />
-    );
+    breadcrumbs.push(<ChevronRight key="chevron-home" className="mx-1 text-white/80" size={16} />)
 
     // Rutas intermedias
     paths.forEach((path, index) => {
-      if (index === 0) return; // skip "dashboard"
-      currentPath += `/${path}`;
-      const isLast = index === paths.length - 1;
-      const title =
-        breadcrumbLabels[path] ||
-        path.charAt(0).toUpperCase() + path.slice(1).replace(/-/g, " ");
+      if (index === 0) return // skip "dashboard"
+      currentPath += `/${path}`
+      const isLast = index === paths.length - 1
+      const title = breadcrumbLabels[path] || path.charAt(0).toUpperCase() + path.slice(1).replace(/-/g, " ")
 
       breadcrumbs.push(
         <Link
           key={path}
           to={`/dashboard${currentPath}`}
           className={
-            isLast
-              ? "font-medium text-white hover:text-white/80"
-              : "text-white/80 hover:text-white transition-colors"
+            isLast ? "font-medium text-white hover:text-white/80" : "text-white/80 hover:text-white transition-colors"
           }
         >
           {title}
-        </Link>
-      );
+        </Link>,
+      )
 
       if (!isLast) {
-        breadcrumbs.push(
-          <ChevronRight
-            key={`chevron-${path}`}
-            className="mx-1 text-white/80"
-            size={16}
-          />
-        );
+        breadcrumbs.push(<ChevronRight key={`chevron-${path}`} className="mx-1 text-white/80" size={16} />)
       }
-    });
+    })
 
-    return breadcrumbs;
-  };
+    return breadcrumbs
+  }
 
-  const breadcrumb = generateBreadcrumb();
+  const breadcrumb = generateBreadcrumb()
 
   function getInitials(name: string) {
-    const words = name.trim().split(" ");
-    if (words.length === 1) return words[0].charAt(0).toUpperCase();
-    return (
-      words[0].charAt(0).toUpperCase() +
-      words[words.length - 1].charAt(0).toUpperCase()
-    );
+    if (!name) return "U"
+    const words = name.trim().split(" ")
+    if (words.length === 1) return words[0].charAt(0).toUpperCase()
+    return words[0].charAt(0).toUpperCase() + words[words.length - 1].charAt(0).toUpperCase()
   }
 
   return (
@@ -141,19 +115,13 @@ export function Header({ onMenuClick }: HeaderProps) {
         {/* Breadcrumb / Botón de menú */}
         <div className="flex items-center gap-3">
           {/* Botón de menú (versión móvil) */}
-          <button
-            onClick={onMenuClick}
-            aria-label="Abrir menú"
-            className="header-icon-button md:hidden"
-          >
+          <button onClick={onMenuClick} aria-label="Abrir menú" className="header-icon-button md:hidden">
             <Menu size={20} />
           </button>
 
           {/* Breadcrumb */}
           {breadcrumb ? (
-            <div className="hidden md:flex items-center text-sm">
-              {breadcrumb}
-            </div>
+            <div className="hidden md:flex items-center text-sm">{breadcrumb}</div>
           ) : (
             <img src="/iconow.svg" alt="BancoSimple" className="w-6 h-6 mr-2" />
           )}
@@ -162,21 +130,14 @@ export function Header({ onMenuClick }: HeaderProps) {
         {/* Sección derecha: tema, notificaciones, usuario */}
         <div className="flex items-center gap-3">
           {/* Botón para cambiar tema */}
-          <button
-            onClick={toggleTheme}
-            aria-label="Cambiar tema"
-            className="header-icon-button"
-          >
+          <button onClick={toggleTheme} aria-label="Cambiar tema" className="header-icon-button">
             {theme === "light" ? <Moon size={18} /> : <Sun size={18} />}
           </button>
 
           {/* Notificaciones */}
           <DropdownMenu>
             <DropdownMenuTrigger asChild>
-              <button
-                aria-label="Notificaciones"
-                className="header-icon-button relative"
-              >
+              <button aria-label="Notificaciones" className="header-icon-button relative">
                 <Bell size={18} />
                 <Badge
                   className="
@@ -195,37 +156,28 @@ export function Header({ onMenuClick }: HeaderProps) {
               <DropdownMenuLabel>Notificaciones</DropdownMenuLabel>
               <DropdownMenuSeparator />
               <div className="max-h-[300px] overflow-y-auto">
-                {[
-                  "Transferencia recibida",
-                  "Pago exitoso",
-                  "Alerta de seguridad",
-                ].map((title, idx) => (
-                  <DropdownMenuItem
-                    key={idx}
-                    className="flex flex-col items-start p-3 hover:bg-muted cursor-pointer"
-                  >
+                {["Transferencia recibida", "Pago exitoso", "Alerta de seguridad"].map((title, idx) => (
+                  <DropdownMenuItem key={idx} className="flex flex-col items-start p-3 hover:bg-muted cursor-pointer">
                     <div className="font-medium">{title}</div>
                     <div className="text-sm text-muted-foreground">
                       {title === "Transferencia recibida"
                         ? "Has recibido $500 de Juan Pérez"
                         : title === "Pago exitoso"
-                        ? "Tu pago de $120 fue procesado"
-                        : "Inicio de sesión desde un nuevo dispositivo"}
+                          ? "Tu pago de $120 fue procesado"
+                          : "Inicio de sesión desde un nuevo dispositivo"}
                     </div>
                     <div className="mt-1 text-xs text-muted-foreground">
                       {title === "Transferencia recibida"
                         ? "Hace 2 horas"
                         : title === "Pago exitoso"
-                        ? "Hace 1 día"
-                        : "Hace 2 días"}
+                          ? "Hace 1 día"
+                          : "Hace 2 días"}
                     </div>
                   </DropdownMenuItem>
                 ))}
               </div>
               <DropdownMenuSeparator />
-              <DropdownMenuItem className="justify-center text-primary cursor-pointer">
-                Ver todas
-              </DropdownMenuItem>
+              <DropdownMenuItem className="justify-center text-primary cursor-pointer">Ver todas</DropdownMenuItem>
             </DropdownMenuContent>
           </DropdownMenu>
 
@@ -242,16 +194,14 @@ export function Header({ onMenuClick }: HeaderProps) {
                 group-hover:text-primary
               "
                   >
-                    {getInitials(user?.name || "Usuario Desconocido")}
+                    {getInitials(user?.email || "Usuario")}
                   </AvatarFallback>
                 </Avatar>
               </button>
             </DropdownMenuTrigger>
 
             <DropdownMenuContent align="end" className="popover">
-              <DropdownMenuLabel className="text-foreground font-semibold">
-                Mi Cuenta
-              </DropdownMenuLabel>
+              <DropdownMenuLabel className="text-foreground font-semibold">Mi Cuenta</DropdownMenuLabel>
               <DropdownMenuSeparator className="bg-border" />
 
               {[
@@ -279,7 +229,7 @@ export function Header({ onMenuClick }: HeaderProps) {
               <DropdownMenuSeparator className="my-1 h-px bg-[var(--popover-border-light)] dark:bg-[var(--popover-border-dark)]" />
 
               <DropdownMenuItem
-                onClick={logout}
+                onClick={handleLogout}
                 className="
               group flex items-center cursor-pointer
                   text-foreground hover:text-primary
@@ -294,5 +244,5 @@ export function Header({ onMenuClick }: HeaderProps) {
         </div>
       </div>
     </header>
-  );
+  )
 }

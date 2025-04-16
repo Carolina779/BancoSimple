@@ -1,6 +1,8 @@
-// src/modules/dashboard/common/components/Sidebar.tsx
+"use client"
 
-import { Link, useLocation } from "react-router-dom";
+import type React from "react"
+
+import { Link, useLocation } from "react-router-dom"
 import {
   LayoutDashboard,
   Contact,
@@ -12,33 +14,36 @@ import {
   X,
   ChevronsLeft,
   ChevronsRight,
-} from "lucide-react";
+  Users,
+  ShieldAlert,
+  UserCheck,
+} from "lucide-react"
 
-import {
-  Tooltip,
-  TooltipContent,
-  TooltipProvider,
-  TooltipTrigger,
-} from "@/components/ui/tooltip";
+import { Tooltip, TooltipContent, TooltipProvider, TooltipTrigger } from "@/components/ui/tooltip"
 
-import { Button } from "@/components/ui/button";
-import { useAuth } from "@/context/AuthContext";
-import { cn } from "@/lib/utils";
-import { useState } from "react";
+import { Button } from "@/components/ui/button"
+import { useAuth } from "@/context/AuthContext"
+import { cn } from "@/lib/utils"
+import { useState } from "react"
 
 interface SidebarProps {
-  isOpen: boolean;
-  onClose: () => void;
+  isOpen: boolean
+  onClose: () => void
 }
 
 export function Sidebar({ isOpen, onClose }: SidebarProps) {
-  const location = useLocation();
-  const { logout } = useAuth();
-  const [collapsed, setCollapsed] = useState(false);
+  const location = useLocation()
+  const { logout, user } = useAuth()
+  const [collapsed, setCollapsed] = useState(false)
 
-  const isActive = (path: string) => location.pathname === path;
-  const isPartialActive = (path: string) =>
-    location.pathname.includes(path) && path !== "/dashboard";
+  // Determinar el rol del usuario autenticado
+  const role = user?.role?.toLowerCase() || "client";
+  const isAdmin = role === "admin";
+  const isExecutive = role === "executive";
+  const isClient = role === "client";
+
+  const isActive = (path: string) => location.pathname === path
+  const isPartialActive = (path: string) => location.pathname.includes(path) && path !== "/dashboard"
 
   return (
     <>
@@ -55,16 +60,13 @@ export function Sidebar({ isOpen, onClose }: SidebarProps) {
           "fixed inset-y-0 left-0 z-50 transform border-r transition-all duration-300 ease-in-out md:relative md:translate-x-0",
           isOpen ? "translate-x-0" : "-translate-x-full",
           collapsed ? "w-20" : "w-72",
-          "bg-[var(--sidebar-bg)] border-[var(--sidebar-border)]"
+          "bg-[var(--sidebar-bg)] border-[var(--sidebar-border)]",
         )}
       >
         <div className="flex h-full flex-col">
           {/* Encabezado: Logo y Botón collapse */}
           <div className="flex items-center justify-between p-4">
-            <Link
-              to="/"
-              className="flex items-center text-xl font-bold text-white truncate"
-            >
+            <Link to="/" className="flex items-center text-xl font-bold text-white truncate">
               {collapsed ? (
                 <img src="/iconow.svg" alt="BS" className="h-8 w-8" />
               ) : (
@@ -80,11 +82,7 @@ export function Sidebar({ isOpen, onClose }: SidebarProps) {
                 aria-label="Colapsar menú"
                 className="text-white hover:bg-white/10"
               >
-                {collapsed ? (
-                  <ChevronsRight size={20} />
-                ) : (
-                  <ChevronsLeft size={20} />
-                )}
+                {collapsed ? <ChevronsRight size={20} /> : <ChevronsLeft size={20} />}
               </Button>
               <Button
                 variant="ghost"
@@ -100,48 +98,84 @@ export function Sidebar({ isOpen, onClose }: SidebarProps) {
 
           {/* Navegación */}
           <nav className="flex-1 overflow-y-auto p-4 space-y-2">
-            <SidebarLink
-              to="/dashboard"
-              icon={LayoutDashboard}
-              text="Inicio"
-              collapsed={collapsed}
-              active={isActive("/dashboard")}
-            />
-            <SidebarLink
-              to="/dashboard/contacts"
-              icon={Contact}
-              text="Contactos"
-              collapsed={collapsed}
-              active={isActive("/dashboard/contacts")}
-            />
-            <SidebarLink
-              to="/dashboard/transactions"
-              icon={Repeat}
-              text="Transferencias"
-              collapsed={collapsed}
-              active={isPartialActive("/dashboard/transactions")}
-            />
-            <SidebarLink
-              to="/dashboard/history"
-              icon={History}
-              text="Historial"
-              collapsed={collapsed}
-              active={isPartialActive("/dashboard/history")}
-            />
-            <SidebarLink
-              to="/dashboard/cards"
-              icon={CreditCard}
-              text="Tarjetas"
-              collapsed={collapsed}
-              active={isPartialActive("/dashboard/cards")}
-            />
-            <SidebarLink
-              to="/dashboard/analytics"
-              icon={BarChart2}
-              text="Analítica"
-              collapsed={collapsed}
-              active={isPartialActive("/dashboard/analytics")}
-            />
+            {/* Solo admin y client ven las rutas comunes */}
+            {(isAdmin || isClient) && (
+              <>
+                <SidebarLink
+                  to="/dashboard"
+                  icon={LayoutDashboard}
+                  text="Inicio"
+                  collapsed={collapsed}
+                  active={isActive("/dashboard")}
+                />
+                <SidebarLink
+                  to="/dashboard/contacts"
+                  icon={Contact}
+                  text="Contactos"
+                  collapsed={collapsed}
+                  active={isActive("/dashboard/contacts")}
+                />
+                <SidebarLink
+                  to="/dashboard/transactions"
+                  icon={Repeat}
+                  text="Transferencias"
+                  collapsed={collapsed}
+                  active={isPartialActive("/dashboard/transactions")}
+                />
+                <SidebarLink
+                  to="/dashboard/history"
+                  icon={History}
+                  text="Historial"
+                  collapsed={collapsed}
+                  active={isPartialActive("/dashboard/history")}
+                />
+                <SidebarLink
+                  to="/dashboard/cards"
+                  icon={CreditCard}
+                  text="Tarjetas"
+                  collapsed={collapsed}
+                  active={isPartialActive("/dashboard/cards")}
+                />
+                <SidebarLink
+                  to="/dashboard/analytics"
+                  icon={BarChart2}
+                  text="Analítica"
+                  collapsed={collapsed}
+                  active={isPartialActive("/dashboard/analytics")}
+                />
+              </>
+            )}
+
+            {/* Solo executive y admin ven el menú de executive */}
+            {(isAdmin || isExecutive) && (
+              <SidebarLink
+                to="/dashboard/executive"
+                icon={UserCheck}
+                text="Atención al Cliente"
+                collapsed={collapsed}
+                active={isPartialActive("/dashboard/executive")}
+              />
+            )}
+
+            {/* Solo admin ve administración y usuarios */}
+            {isAdmin && (
+              <>
+                <SidebarLink
+                  to="/dashboard/admin"
+                  icon={ShieldAlert}
+                  text="Administración"
+                  collapsed={collapsed}
+                  active={isPartialActive("/dashboard/admin")}
+                />
+                <SidebarLink
+                  to="/dashboard/admin/users"
+                  icon={Users}
+                  text="Usuarios"
+                  collapsed={collapsed}
+                  active={isPartialActive("/dashboard/admin/users")}
+                />
+              </>
+            )}
           </nav>
 
           {/* Cerrar sesión */}
@@ -151,7 +185,7 @@ export function Sidebar({ isOpen, onClose }: SidebarProps) {
         </div>
       </aside>
     </>
-  );
+  )
 }
 
 function SidebarLink({
@@ -161,64 +195,61 @@ function SidebarLink({
   collapsed,
   active,
 }: {
-  to: string;
-  icon: React.ElementType;
-  text: string;
-  collapsed: boolean;
-  active: boolean;
+  to: string
+  icon: React.ElementType
+  text: string
+  collapsed: boolean
+  active: boolean
 }) {
   const baseClasses = cn(
     "border border-transparent border-white/30 bg-transparent text-white hover:bg-white hover:text-primary transition-colors font-medium",
     collapsed
       ? "w-10 h-10 flex items-center justify-center rounded-full"
       : "w-full px-3 py-2.5 flex items-center gap-2 rounded-xl",
-    active && "!bg-white !text-primary"
-  );
+    active && "!bg-white !text-primary",
+  )
 
   const content = (
     <Link to={to} className={baseClasses}>
       <Icon size={18} />
       {!collapsed && text}
     </Link>
-  );
+  )
 
   if (collapsed) {
     return (
       <TooltipProvider delayDuration={300}>
         <Tooltip>
           <TooltipTrigger asChild>{content}</TooltipTrigger>
-          <TooltipContent
-            side="right"
-            className="text-sm font-medium text-white"
-          >
+          <TooltipContent side="right" className="text-sm font-medium text-white">
             {text}
           </TooltipContent>
         </Tooltip>
       </TooltipProvider>
-    );
+    )
   }
 
-  return content;
+  return content
 }
 
 function SidebarLogoutButton({
   collapsed,
   onLogout,
 }: {
-  collapsed: boolean;
-  onLogout: () => void;
+  collapsed: boolean
+  onLogout: () => void
 }) {
   const baseClasses = cn(
     "border border-transparent border-white/30 bg-transparent text-white hover:bg-white hover:text-primary transition-colors font-medium",
     collapsed
       ? "w-10 h-10 flex items-center justify-center rounded-full"
-      : "w-full px-3 py-2.5 flex items-center gap-2 rounded-xl"
-  );
+      : "w-full px-3 py-2.5 flex items-center gap-2 rounded-xl",
+  )
 
   return (
     <button onClick={onLogout} className={baseClasses}>
       <LogOut size={16} />
       {!collapsed && "Cerrar sesión"}
     </button>
-  );
+  )
 }

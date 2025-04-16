@@ -1,7 +1,9 @@
 // src/modules/dashboard/common/page/DashboardPage.tsx
 
 "use client";
-import { ReactNode } from "react";
+import { ReactNode, useEffect } from "react";
+import { useAuth } from "@/context/AuthContext";
+import { useNavigate } from "react-router-dom";
 import Layout from "@/modules/dashboard/common/components/Layout";
 import { Button } from "@/components/ui/button";
 import {
@@ -26,6 +28,21 @@ import AccountBalance from "@/modules/dashboard/cards/components/AccountBalance"
 import TransactionsTable from "@/modules/dashboard/transactions/components/TransactionsTable";
 
 export default function DashboardPage() {
+  const { user } = useAuth();
+  const navigate = useNavigate();
+
+  useEffect(() => {
+    if (user) {
+      const role = user.role?.toLowerCase();
+      if (role === "executive") {
+        navigate("/dashboard/executive", { replace: true });
+      } else if (role === "admin") {
+        navigate("/dashboard/admin", { replace: true });
+      }
+      // Si es cliente, se queda en /dashboard
+    }
+  }, [user, navigate]);
+
   const userName = "Juan";
   const currentDate = new Date().toLocaleDateString("es-ES", {
     weekday: "long",

@@ -34,15 +34,21 @@ const LoginForm = () => {
     setIsLoading(true);
 
     try {
-      await login(email, password);
-      toast.success("Inicio de sesión exitoso", {
-        description: "Redirigiendo al panel de control...",
-      });
-      navigate("/dashboard");
+      const success = await login(email, password);
+      if (success) {
+        toast.success("Inicio de sesión exitoso", {
+          description: "Redirigiendo al panel de control...",
+        });
+        navigate("/dashboard");
+      } else {
+        toast.error("Error de inicio de sesión", {
+          description: "Credenciales incorrectas. Por favor, inténtalo de nuevo.",
+        });
+      }
     } catch (error) {
       console.error("Error de inicio de sesión:", error);
       toast.error("Error de inicio de sesión", {
-        description: "Credenciales incorrectas. Por favor, inténtalo de nuevo.",
+        description: "Ocurrió un error inesperado. Por favor, inténtalo de nuevo.",
       });
     } finally {
       setIsLoading(false);

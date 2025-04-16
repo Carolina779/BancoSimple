@@ -1,126 +1,96 @@
-import {
-  createContext,
-  useContext,
-  useState,
-  useEffect,
-  ReactNode,
-} from "react";
+"use client"
+import type React from "react"
+import { createContext, useContext, useState, useEffect } from "react"
+import { userLogin } from "@/utils/mockData" // Asegúrate de que la ruta sea correcta
 
-interface User {
-  id: string;
-  name: string;
-  avatar?: string;
-  email: string;
-  balance: number;
+// Definimos el tipo para nuestro usuario
+export interface User {
+  id: number
+  email: string
+  role: string
+  password?: string
 }
 
+// Definimos la interfaz para nuestro contexto de autenticación
 interface AuthContextType {
-  user: User | null;
-  isAuthenticated: boolean;
-  isLoading: boolean;
-  login: (email: string, password: string) => Promise<void>;
-  register: (
-    name: string,
-    email: string,
-    phone: string,
-    password: string
-  ) => Promise<void>;
-  logout: () => void;
+  user: User | null
+  isAuthenticated: boolean
+  login: (email: string, password: string) => Promise<boolean>
+  logout: () => void
 }
 
-const AuthContext = createContext<AuthContextType | undefined>(undefined);
+// Creamos el contexto
+const AuthContext = createContext<AuthContextType | undefined>(undefined)
 
-export function AuthProvider({ children }: { children: ReactNode }) {
-  const [user, setUser] = useState<User | null>(null);
-  const [isLoading, setIsLoading] = useState(true);
-
-  useEffect(() => {
-    if (typeof window !== "undefined") {
-      const storedUser = localStorage.getItem("user");
-      if (storedUser) {
-        setUser(JSON.parse(storedUser));
-      }
-      setIsLoading(false);
-    }
-  }, []);
-
-  const login = async (email: string, _password: string) => {
-    setIsLoading(true);
-    try {
-      // Simulación de llamada a API
-      await new Promise((resolve) => setTimeout(resolve, 1000));
-
-      // Datos de usuario simulados
-      const userData: User = {
-        id: "1",
-        name: "Usuario Demo",
-        email,
-        balance: 5000,
-      };
-
-      setUser(userData);
-      localStorage.setItem("user", JSON.stringify(userData));
-    } catch (error) {
-      console.error("Error en login:", error);
-      throw error;
-    } finally {
-      setIsLoading(false);
-    }
-  };
-
-  const register = async (
-    name: string,
-    email: string,
-    _phone: string,
-    _password: string
-  ) => {
-    setIsLoading(true);
-    try {
-      await new Promise((resolve) => setTimeout(resolve, 1000));
-
-      // Datos de usuario simulados
-      const userData: User = {
-        id: "1",
-        name,
-        email,
-        balance: 1000,
-      };
-
-      setUser(userData);
-      localStorage.setItem("user", JSON.stringify(userData));
-    } catch (error) {
-      console.error("Error en registro:", error);
-      throw error;
-    } finally {
-      setIsLoading(false);
-    }
-  };
-
-  const logout = () => {
-    setUser(null);
-    localStorage.removeItem("user");
-  };
-
-  return (
-    <AuthContext.Provider
-      value={{
-        user,
-        isAuthenticated: !!user,
-        isLoading,
-        login,
-        register,
-        logout,
-      }}
-    >
-      {children}
-    </AuthContext.Provider>
-  );
-}
-
+// Hook personalizado para usar el contexto
 export function useAuth() {
-  const context = useContext(AuthContext);
-  if (!context) {
-    throw new Error("useAuth debe ser usado dentro de un AuthProvider");
+  const context = useContext(AuthContext)
+  if (context === undefined) {
+    throw new Error("useAuth debe ser usado dentro de un AuthProvider")
   }
-  return context;
+  return context
+}
+
+// Proveedor del contexto
+export function AuthProvider({ children }: { children: React.ReactNode }) {
+  const [user, setUser] = useState<User | null>(null)
+  const [isAuthenticated, setIsAuthenticated] = useState<boolean>(false)
+
+  // Verificar si hay un usuario en localStorage al cargar
+  useEffect(() => {
+    const storedUser = localStorage.getItem("bankingUser")
+    if (storedUser) {
+      setUser(JSON.parse(storedUser))
+      setIsAuthenticated(true)
+    }
+  }, [])
+
+  // Función de login simulada
+  const login = async (email: string, password: string): Promise<boolean> => {
+    // Simulamos una verificación de credenciales
+    try {
+      // Simulamos un delay para imitar una llamada a API
+      await new Promise((resolve) => setTimeout(resolve, 800))
+
+      // Buscamos el usuario por email y password
+      const foundUser = userLogin.find((u) => u.email.toLowerCase() === email.toLowerCase() && u.password === password)
+
+      if (foundUser) {
+        // Creamos un objeto de usuario sin la contraseña para almacenarlo
+        const userToStore = {
+          id: Number(foundUser.id), // Convertimos el id a número
+          email: foundUser.email,
+          role: foundUser.role,
+          password: foundUser.password, // Solo para la simulación, no se debería almacenar la contraseña en un entorno real
+        }
+
+        setUser(userToStore)
+        setIsAuthenticated(true)
+        localStorage.setItem("bankingUser", JSON.stringify(userToStore))
+        return true
+      }
+
+      return false
+    } catch (error) {
+      console.error("Error durante el login:", error)
+      return false
+    }
+  }
+
+  // Función de logout
+  const logout = () => {
+    setUser(null)
+    setIsAuthenticated(false)
+    localStorage.removeItem("bankingUser")
+  }
+
+  // Valores que proporcionará el contexto
+  const value = {
+    user,
+    isAuthenticated,
+    login,
+    logout,
+  }
+
+  return <AuthContext.Provider value={value}>{children}</AuthContext.Provider>
 }
