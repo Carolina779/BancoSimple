@@ -1,26 +1,50 @@
-// modules/dashboard/cards/components/QuickActions.tsx
-
-import { Button } from "@/components/ui/button";
-import { CreditCard, Lock, AlertTriangle, DollarSign } from "lucide-react";
+import { Button } from "@/components/ui/button"
+import { CreditCard, Lock, AlertTriangle, DollarSign } from "lucide-react"
+import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card"
 
 export function QuickActions() {
+  const actions = [
+    {
+      icon: Lock,
+      label: "Bloquear tarjeta",
+      color: "text-red-500",
+    },
+    {
+      icon: AlertTriangle,
+      label: "Reportar problema",
+      color: "text-yellow-500",
+    },
+    {
+      icon: DollarSign,
+      label: "Realizar pago",
+      color: "text-green-500",
+    },
+    {
+      icon: CreditCard,
+      label: "Solicitar adicional",
+      color: "text-blue-500",
+    },
+  ]
+
   return (
-    <div className="grid gap-4">
-      <h3 className="text-lg font-semibold">Acciones rápidas</h3>
-      <div className="grid grid-cols-1 sm:grid-cols-2 gap-2">
-        <Button variant="outline" className="flex gap-2">
-          <Lock size={18} /> Bloquear tarjeta
-        </Button>
-        <Button variant="outline" className="flex gap-2">
-          <AlertTriangle size={18} /> Reportar problema
-        </Button>
-        <Button variant="outline" className="flex gap-2">
-          <DollarSign size={18} /> Realizar pago
-        </Button>
-        <Button variant="outline" className="flex gap-2">
-          <CreditCard size={18} /> Solicitar adicional
-        </Button>
-      </div>
-    </div>
-  );
+    <Card className="border-primary/20">
+      <CardHeader className="p-4">
+        <CardTitle className="text-lg font-semibold">Acciones rápidas</CardTitle>
+      </CardHeader>
+      <CardContent className="p-4 pt-0">
+        <div className="grid grid-cols-1 sm:grid-cols-2 gap-2">
+          {actions.map((action, index) => (
+            <Button
+              key={index}
+              variant="outline"
+              className="button-outline-auto justify-start h-10 text-sm hover:bg-primary/5"
+            >
+              <action.icon size={16} className={`mr-2 ${action.color}`} />
+              {action.label}
+            </Button>
+          ))}
+        </div>
+      </CardContent>
+    </Card>
+  )
 }

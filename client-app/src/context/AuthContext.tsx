@@ -7,7 +7,7 @@ import { userLogin } from "@/utils/mockData" // Asegúrate de que la ruta sea co
 export interface User {
   id: number
   email: string
-  role: string
+  roles: string[]
   password?: string
 }
 
@@ -17,6 +17,8 @@ interface AuthContextType {
   isAuthenticated: boolean
   login: (email: string, password: string) => Promise<boolean>
   logout: () => void
+  hasRole: (role: string) => boolean
+  hasAnyRole: (roles: string[]) => boolean
 }
 
 // Creamos el contexto
@@ -60,7 +62,7 @@ export function AuthProvider({ children }: { children: React.ReactNode }) {
         const userToStore = {
           id: Number(foundUser.id), // Convertimos el id a número
           email: foundUser.email,
-          role: foundUser.role,
+          roles: foundUser.roles,
           password: foundUser.password, // Solo para la simulación, no se debería almacenar la contraseña en un entorno real
         }
 
@@ -84,12 +86,18 @@ export function AuthProvider({ children }: { children: React.ReactNode }) {
     localStorage.removeItem("bankingUser")
   }
 
+  // Helpers para verificar roles
+  const hasRole = (role: string) => !!user?.roles?.includes(role);
+  const hasAnyRole = (rolesToCheck: string[]) => user?.roles?.some(r => rolesToCheck.includes(r)) ?? false;
+
   // Valores que proporcionará el contexto
   const value = {
     user,
     isAuthenticated,
     login,
     logout,
+    hasRole,
+    hasAnyRole,
   }
 
   return <AuthContext.Provider value={value}>{children}</AuthContext.Provider>

@@ -1,25 +1,32 @@
 // Mock user data
 
-
 export const userLogin = [
   {
     id: "acc67",
-   email: "admin@email.com",
-   password: "123456",
-   role: "Admin",
+    email: "admin@email.com",
+    password: "123456",
+    roles: ["Admin"],
   },
 
   {
     id: "acc68",
-   email: "ejecutivo@email.com",
-   password: "123456",
-   role: "Executive",
+    email: "ejecutivo@email.com",
+    password: "123456",
+    roles: ["Executive"],
   },
- {      
-   id: "acc69",
+  
+  {      
+    id: "acc69",
     email: "cliente@email.com",
     password: "123456",
-    role: "Client",
+    roles: ["Client"],
+  },
+
+  {
+    id: "acc70",
+    email: "premium@email.com",
+    password: "123456",
+    roles: ["Client", "Premium"],
   }
 ]
   

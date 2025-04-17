@@ -20,6 +20,7 @@ import AnalyticsPage from "@/modules/dashboard/analytics/page/AnalyticsPage";
 import Settings from "@/modules/dashboard/settings/page/SettingsPage";
 import ExecutiveDashboardPage from "./modules/dashboard/executive/page/ExecutiveDashboardPage";
 import AdminDashboardPage from "./modules/dashboard/admin/page/AdminDashboardPage";
+import ClientPremiumDashboardPage from "@/modules/dashboard/client/page/ClientPremiumDashboardPage";
 // En construcción
 import PlaySimple from "@/modules/common/pages/PlaySimple";
 import SeguroSimple from "@/modules/common/pages/SeguroSimple";
@@ -57,6 +58,7 @@ function App() {
             <Route path="/dashboard/admin" element={<AdminDashboardPage />} />
             <Route path="/dashboard/admin/users" element={<AdminDashboardPage />} />
             <Route path="/dashboard/executive" element={<ExecutiveDashboardPage />} />
+            <Route path="/dashboard/premium" element={<ClientPremiumDashboardPage />} />
             <Route path="/dashboard/history" element={<HistoryPage />} />
             <Route path="/dashboard/cards" element={<CardsPage />} />
             <Route path="/dashboard/analytics" element={<AnalyticsPage />} />

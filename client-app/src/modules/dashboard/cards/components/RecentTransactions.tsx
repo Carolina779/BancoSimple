@@ -1,13 +1,7 @@
-// modules/dashboard/cards/components/RecentTransactions.tsx
-
-import { Avatar, AvatarFallback } from "@/components/ui/avatar";
-import {
-  Card,
-  CardContent,
-  CardDescription,
-  CardHeader,
-  CardTitle,
-} from "@/components/ui/card";
+import { Avatar, AvatarFallback } from "@/components/ui/avatar"
+import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card"
+import { Button } from "@/components/ui/button"
+import { ChevronRight } from "lucide-react"
 
 export function RecentTransactions() {
   const transactions = [
@@ -39,43 +33,49 @@ export function RecentTransactions() {
       date: "20/03/2025",
       icon: "📱",
     },
-  ];
+  ]
 
   return (
-    <Card>
-      <CardHeader>
-        <CardTitle>Transacciones recientes</CardTitle>
-        <CardDescription>Últimos movimientos de tus tarjetas</CardDescription>
+    <Card className="border-primary/20">
+      <CardHeader className="p-4">
+        <div className="flex items-center justify-between">
+          <div>
+            <CardTitle className="text-lg font-semibold">Transacciones recientes</CardTitle>
+            <CardDescription className="text-xs">Últimos movimientos de tus tarjetas</CardDescription>
+          </div>
+          <Button variant="ghost" size="sm" className="text-primary text-xs h-8 px-2">
+            Ver todas
+          </Button>
+        </div>
       </CardHeader>
-      <CardContent>
-        <div className="space-y-4">
+      <CardContent className="p-4 pt-0">
+        <div className="space-y-3">
           {transactions.map((transaction) => (
-            <div key={transaction.id} className="flex items-center gap-4">
-              <Avatar className="h-9 w-9">
-                <AvatarFallback>{transaction.icon}</AvatarFallback>
+            <div
+              key={transaction.id}
+              className="flex items-center gap-3 p-2 rounded-lg border border-border hover:border-primary/30 hover:bg-primary/5 transition-colors"
+            >
+              <Avatar className="h-8 w-8">
+                <AvatarFallback className="text-xs">{transaction.icon}</AvatarFallback>
               </Avatar>
-              <div className="flex-1 space-y-1">
-                <p className="text-sm font-medium leading-none">
-                  {transaction.name}
-                </p>
-                <p className="text-sm text-muted-foreground">
-                  {transaction.date}
-                </p>
+              <div className="flex-1 min-w-0">
+                <p className="text-sm font-medium leading-none truncate">{transaction.name}</p>
+                <p className="text-xs text-muted-foreground">{transaction.date}</p>
               </div>
               <div
                 className={
-                  transaction.amount > 0
-                    ? "text-green-500 font-medium"
-                    : "text-red-500 font-medium"
+                  transaction.amount > 0 ? "text-green-500 font-medium text-sm" : "text-red-500 font-medium text-sm"
                 }
               >
-                {transaction.amount > 0 ? "+" : "-"}$
-                {Math.abs(transaction.amount).toFixed(2)}
+                {transaction.amount > 0 ? "+" : ""}${Math.abs(transaction.amount).toFixed(2)}
               </div>
+              <Button variant="ghost" size="icon" className="h-6 w-6 text-muted-foreground">
+                <ChevronRight className="h-4 w-4" />
+              </Button>
             </div>
           ))}
         </div>
       </CardContent>
     </Card>
-  );
+  )
 }

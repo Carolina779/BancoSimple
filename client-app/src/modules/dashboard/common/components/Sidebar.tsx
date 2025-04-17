@@ -36,11 +36,12 @@ export function Sidebar({ isOpen, onClose }: SidebarProps) {
   const { logout, user } = useAuth()
   const [collapsed, setCollapsed] = useState(false)
 
-  // Determinar el rol del usuario autenticado
-  const role = user?.role?.toLowerCase() || "client";
-  const isAdmin = role === "admin";
-  const isExecutive = role === "executive";
-  const isClient = role === "client";
+  // Determinar los roles del usuario autenticado
+  const roles = user?.roles || [];
+  const isAdmin = roles.includes("Admin");
+  const isExecutive = roles.includes("Executive");
+  const isClient = roles.includes("Client");
+  const isPremium = roles.includes("Premium");
 
   const isActive = (path: string) => location.pathname === path
   const isPartialActive = (path: string) => location.pathname.includes(path) && path !== "/dashboard"
@@ -144,6 +145,17 @@ export function Sidebar({ isOpen, onClose }: SidebarProps) {
                   active={isPartialActive("/dashboard/analytics")}
                 />
               </>
+            )}
+
+            {/* Menú exclusivo para clientes premium */}
+            {isPremium && (
+              <SidebarLink
+                to="/dashboard/premium"
+                icon={ShieldAlert}
+                text="Beneficios Premium"
+                collapsed={collapsed}
+                active={isPartialActive("/dashboard/premium")}
+              />
             )}
 
             {/* Solo executive y admin ven el menú de executive */}
